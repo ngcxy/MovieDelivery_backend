@@ -13,26 +13,20 @@ const { MongoClient, ObjectId} = require("mongodb");
 
 class SourceMongo {
     constructor(){
-        this.config = {
-            "host":"localhost",
-            "port":"27017",
-            "db":"ee547_final",
-            "opts":{
-                "useUnifiedTopology":true
-            }
-        }
 
-        const uri = `mongodb://${this.config.host}:${this.config.port}`;
-        const client = new MongoClient(uri, this.config.opts);
-        try {
-            const database = client.db("ee547_final");
-            this._db = database;
-            const user = database.collection("user");
-            const movie = database.collection("movie");
-        } catch (err) {
-            process.exit(5);
-        }
-    };
+        const url = 'mongodb+srv://cluster0.85u9pp0.mongodb.net/';
+        const dbName = '@cluster0.85u9pp0.mongodb.net';
+        const client = new MongoClient(url, { useUnifiedTopology: true });
+        client.connect()
+            .then(() => {
+                console.log('Connected to the database');
+            })
+            .catch(err => console.error('Error connecting to the database:', err));
+        const database = client.db("ee547_final");
+        this._db = database;
+        const user = database.collection("user");
+        const movie = database.collection("movie");
+    }
 }
 
 const db = new SourceMongo();
