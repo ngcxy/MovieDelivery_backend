@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class TmdbApi {
     constructor() {
-        const apiKey = 'cyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.GpDRfWO52b5yG_I677xxhAfzQbnU8a2PzQIlOmAFtws';
+        const apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyYzkyOTkzMzc1NDMxYzkyZDBiYWU2YWYwYmI0MDhmYiIsInN1YiI6IjY1NjA0NTExMzY3OWExMDk3NTI3ZGJmMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.GpDRfWO52b5yG_I677xxhAfzQbnU8a2PzQIlOmAFtws';
         this.api = axios.create({
             baseURL: 'https://api.themoviedb.org/3/',
             headers: {
@@ -12,22 +12,20 @@ class TmdbApi {
         });
     }
 
-    getMovieDetail(id) {
-        this.api
-            .get(`movie/${id}`)
-            .catch(err =>
-                console.log(err)
-            )
-            .then(res => {
-                return(res.data);
-            })
+    async getMovieDetail(id) {
+        try {
+            const res = await this.api.get(`movie/${id}`);
+            return(res.data);
+        } catch(err){
+            console.log(err)
+        }
     }
 
-    getMovieRate(id, callback) {
+    getMovieRate(id) {
 
     }
 
-    getMovieReview(id, callback) {
+    getMovieReview(id) {
 
     }
 

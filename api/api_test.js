@@ -4,8 +4,10 @@ const {TmdbApi} = require(`${__dirname}/tmdbapi.js`);
 
 const { axios } = require('axios');
 
-const tmdb = new TmdbApi();
-tmdb.getMovieDetail('670292', (data)=>{
-    return(data);
-});
+async function test_tmdb(){
+    const tmdb = new TmdbApi;
+    return await tmdb.getMovieDetail('670292');
+}
+
+test_tmdb().then(r => console.log(r));
 
