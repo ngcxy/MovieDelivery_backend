@@ -6,6 +6,6 @@ const { axios } = require('axios');
 
 const tmdb = new TmdbApi();
 tmdb.getMovieDetail('670292', (data)=>{
-    console.log(data);
+    return(data);
 });
 

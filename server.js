@@ -35,18 +35,19 @@ class SourceMongo {
     };
 }
 
-const amc_call = function (req, res, next) {
-  req.headers['X-AMC-Vendor-Key'] = '5152BF1C-8420-44F8-B7A4-2E46B563758B'      // refresh every Thursday
-  next();
-};
-app_amc.use(amc_call);
-
 const db = new SourceMongo();
 
 app.get('/ping', (req, res) => {
     res.status(204).send();
 })
 
+app.get('/movies/', (req, res) => {
+    res.status(204).send();
+})
+
+app.get('/movie/', (req, res) => {
+    res.status(204).send();
+})
 
 app.listen(PORT);
 console.log(` server started -- port:${PORT}`);
