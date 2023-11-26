@@ -1,5 +1,5 @@
 'use strict';
-const {TmdbApi} = require(`${__dirname}/tmdbApi.js`);
+const {TmdbApi} = require(`${__dirname}/api/tmdbApi.js`);
 //import other api to test
 
 const { axios } = require('axios');

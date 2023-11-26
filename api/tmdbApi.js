@@ -21,11 +21,20 @@ class TmdbApi {
         }
     }
 
-    getMovieRate(id) {
+    async getMovieRate(id) {
+        try {
+            const res = await this.api.get(`movie/${id}`);
+            return(res.data);
+        } catch(err){
+            console.log(err)
+        }
+    }
+
+    async getMovieReview(id) {
 
     }
 
-    getMovieReview(id) {
+    async getMovieProvider(id) {
 
     }
 
