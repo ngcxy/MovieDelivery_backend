@@ -3,7 +3,6 @@ const cors = require('cors');
 const PORT = 4000;
 const app = express();
 
-
 const {SourceMongo} = require(`${__dirname}/sourceMongo.js`);
 
 // app.set('view engine', 'ejs');
@@ -31,6 +30,11 @@ app.get('/movie/:_id', async (req, res) => {
 app.get('/movie/rating/:_id', async (req, res) => {
     const r = await db.getMovieRating(req.params._id);
     res.status(200).send(r);
+})
+
+app.get('/movie/provider/:_id', async (req, res) => {
+    const p = await db.getMovieProvider(req.params._id);
+    res.status(200).send(p);
 })
 
 app.post('/movie/:tmid', async (req, res) => {

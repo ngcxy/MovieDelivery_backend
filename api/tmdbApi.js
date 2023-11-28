@@ -21,13 +21,48 @@ class TmdbApi {
         }
     }
 
-
-
-    async getMovieReview(id) {
-
+    async getMovieProvider(id) {
+        try {
+            const info = await this.api.get(`movie/${id}/watch/providers`);
+            const res = info.data.results.US;
+            return {
+                link: res.link,
+                provider: this.providerNormalize(res)
+            };
+        } catch(err){
+            console.log(err)
+        }
     }
 
-    async getMovieProvider(id) {
+    // simplify the provider list:
+    // rent and buy providers will both show as available
+    // only retrieve providers with priority <= 20
+    providerNormalize(res) {
+        const result = [];
+        const provider = new Set();
+
+        for (let rent of res.rent) {
+            if (rent.display_priority <= 20) {
+                result.push({
+                    provider_name: rent.provider_name,
+                    logo_path: rent.logo_path
+                });
+                provider.add(rent.provider_name);
+            }
+        }
+        for (let buy of res.buy) {
+            if (buy.display_priority <= 20 && !provider.has(buy.provider_name)) {
+                result.push({
+                    provider_name: buy.provider_name,
+                    logo_path: buy.logo_path
+                });
+                provider.add(buy.provider_name);
+            }
+        }
+        return result;
+    }
+
+    async getMovieReview(id) {
 
     }
 

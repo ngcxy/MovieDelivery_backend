@@ -53,6 +53,15 @@ class SourceMongo {
         }
     }
 
+    async getMovieProvider(_id) {
+        let movie = await this.movies.findOne({_id:new ObjectId(_id)});
+        if (movie) {
+            const tmid = movie.tmid;
+            console.log("Called: get movie provider, _id: ", _id);
+            return this.tmdb.getMovieProvider(tmid)
+        }
+    }
+
     async addMovie(id) {
         const movie = await this.tmdb.getMovieDetail(id);
         const timestamp = new Date();
