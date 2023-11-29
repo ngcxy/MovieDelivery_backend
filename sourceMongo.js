@@ -25,7 +25,7 @@ class SourceMongo {
 
         const database = client.db("547final");
         this._db = database;
-        this.users = database.collection("user");
+        this.user = database.collection("user");
         this.movies = database.collection("movie");
         this.list = database.collection("list");
     }
@@ -64,15 +64,15 @@ class SourceMongo {
 
     async addMovie(id) {
         const movie = await this.tmdb.getMovieDetail(id);
-        const timestamp = new Date();
         if (movie) {
             await this.movies.insertOne({
                 tmid:id,
                 title: movie.title,
+                genres: movie.genres.map(genres => genres.name),
                 poster_url: movie.poster_path,
-                create_time: timestamp,
-                listed:0,
-                liked:0
+                liked:0,
+                last_mentioned: null,
+                review: []
             });
             console.log("Called: add movie id: ", id);
         }

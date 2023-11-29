@@ -9,6 +9,7 @@ const {SourceMongo} = require(`${__dirname}/sourceMongo.js`);
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 // app.use(express.static('public'));
+
 app.use(cors());
 
 const db = new SourceMongo();
@@ -37,6 +38,56 @@ app.get('/movie/provider/:_id', async (req, res) => {
     res.status(200).send(p);
 })
 
+app.get('/movie/video/:_id', async (req, res) => {
+
+})
+
+app.get('/movie/reviews/:_id', async (req, res) => {
+
+})
+
+app.get('/post', async (req, res) => {
+
+})
+
+
+// user operation
+
+app.post('/list/:uid', async (req, res) => {
+    // add a movie into user's list
+    // include mongodb _id of the movie as req.query[_id]
+})
+
+app.get('/list/:uid', async (req, res) => {
+    // get all movies in user's list
+})
+
+app.delete('/list/:uid', async (req, res) => {
+    //delete a movie from user's list
+    // include mongodb _id of the movie as req.query[_id]
+})
+
+app.post('/movie/like/:_id', async (req, res) => {
+// include mongodb user's _id as req.query[uid]
+})
+
+app.post('/movie/reviews/:_id', async (req, res) => {
+
+})
+
+app.post('/post/:uid', async (req, res) => {
+
+})
+
+app.delete('/post/:uid', async (req, res) => {
+
+})
+
+app.post('/recommend/:uid', async (req, res) => {
+
+})
+
+// admin movie management
 app.post('/movie/:tmid', async (req, res) => {
     const m = await db.addMovie(req.params.tmid);
     console.log("add movie id: ", req.params.tmid);
