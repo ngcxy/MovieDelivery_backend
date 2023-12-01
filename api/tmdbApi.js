@@ -24,11 +24,15 @@ class TmdbApi {
     async getMovieProvider(id) {
         try {
             const info = await this.api.get(`movie/${id}/watch/providers`);
-            const res = info.data.results.US;
-            return {
-                link: res.link,
-                provider: this.providerNormalize(res)
-            };
+            if (info.data.results.US){
+                const res = info.data.results.US;
+                return {
+                    link: res.link,
+                    provider: this.providerNormalize(res)
+                };
+            } else {
+                return {}
+            }
         } catch(err){
             console.log(err)
         }
@@ -60,6 +64,16 @@ class TmdbApi {
             }
         }
         return result;
+    }
+
+    async getMovieVideo(id) {
+        try {
+            const info = await this.api.get(`movie/${id}/videos`);
+            const res = info.data.results.filter(r => r.site === "YouTube").map(r => r.key);
+            return res[0];
+        } catch(err){
+            console.log(err)
+        }
     }
 
     async getMovieReview(id) {

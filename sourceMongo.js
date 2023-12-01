@@ -45,6 +45,23 @@ class SourceMongo {
         }
     }
 
+    async searchMovie(query) {
+        let pipeline = [
+            {
+                $search: {
+                    index: "searchTitle",
+                    text: {
+                        query: query,
+                        path: {
+                            wildcard: "*"
+                        }
+                    }
+                }
+            }
+        ];
+        return this.movies.aggregate(pipeline).toArray();
+    }
+
     async getMovieRating(_id) {
         let movie= await this.getMovie(_id);
         if (movie) {
@@ -62,12 +79,23 @@ class SourceMongo {
         }
     }
 
+    async getMovieVideo(_id) {
+        let movie = await this.movies.findOne({_id:new ObjectId(_id)});
+        if (movie) {
+            const tmid = movie.tmid;
+            console.log("Called: get movie videos, _id: ", _id);
+            return this.tmdb.getMovieVideo(tmid)
+        }
+    }
+
     async addMovie(id) {
         const movie = await this.tmdb.getMovieDetail(id);
         if (movie) {
+            const release_date = movie.release_date;
             await this.movies.insertOne({
                 tmid:id,
                 title: movie.title,
+                year: release_date.slice(0,4),
                 genres: movie.genres.map(genres => genres.name),
                 poster_url: movie.poster_path,
                 liked:0,

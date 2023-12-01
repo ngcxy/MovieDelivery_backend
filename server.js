@@ -23,30 +23,31 @@ app.get('/movies/', async (req, res) => {
     res.status(200).send(m);
 })
 
-app.get('/movie/:_id', async (req, res) => {
+app.get('/movies/search', async (req, res) => {
+    const result = await db.searchMovie(req.query.q);
+    res.status(200).send(result);
+})
+
+app.get('/movies/:_id', async (req, res) => {
     const m = await db.getMovie(req.params._id);
     res.status(200).send(m);
 })
 
-app.get('/movie/rating/:_id', async (req, res) => {
+app.get('/movies/:_id/ratings', async (req, res) => {
     const r = await db.getMovieRating(req.params._id);
     res.status(200).send(r);
 })
 
-app.get('/movie/provider/:_id', async (req, res) => {
+app.get('/movies/:_id/providers', async (req, res) => {
     const p = await db.getMovieProvider(req.params._id);
     res.status(200).send(p);
 })
 
-app.get('/movie/video/:_id', async (req, res) => {
+app.get('/movies/:_id/reviews', async (req, res) => {
 
 })
 
-app.get('/movie/reviews/:_id', async (req, res) => {
-
-})
-
-app.get('/post', async (req, res) => {
+app.get('/posts', async (req, res) => {
 
 })
 
