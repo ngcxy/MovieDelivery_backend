@@ -89,10 +89,12 @@ class SourceMongo {
     }
 
     async addMovie(id) {
+        let timestamp = new Date();
         const movie = await this.tmdb.getMovieDetail(id);
         if (movie) {
             const release_date = movie.release_date;
             await this.movies.insertOne({
+                creat_time: timestamp,
                 tmid:id,
                 title: movie.title,
                 year: release_date.slice(0,4),
