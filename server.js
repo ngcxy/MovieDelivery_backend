@@ -43,6 +43,11 @@ app.get('/movies/:_id/providers', async (req, res) => {
     res.status(200).send(p);
 })
 
+app.get('/movies/:_id/videos', async (req, res) => {
+    const v = await db.getMovieVideo(req.params._id);
+    res.status(200).send(v);
+})
+
 app.get('/movies/:_id/reviews', async (req, res) => {
 
 })

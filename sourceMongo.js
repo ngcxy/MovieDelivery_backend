@@ -98,7 +98,8 @@ class SourceMongo {
                 year: release_date.slice(0,4),
                 genres: movie.genres.map(genres => genres.name),
                 poster_url: movie.poster_path,
-                liked:0,
+                like:0,
+                dislike:0,
                 last_mentioned: null,
                 review: []
             });

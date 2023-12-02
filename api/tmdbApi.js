@@ -70,7 +70,7 @@ class TmdbApi {
         try {
             const info = await this.api.get(`movie/${id}/videos`);
             const res = info.data.results.filter(r => r.site === "YouTube").map(r => r.key);
-            return res[0];
+            return res[0];      // only return the first video now
         } catch(err){
             console.log(err)
         }
