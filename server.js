@@ -60,21 +60,75 @@ app.get('/posts', async (req, res) => {
 // user operation
 
 app.post('/list/:uid', async (req, res) => {
-    // add a movie into user's list
-    // include mongodb _id of the movie as req.query[_id]
+    try {
+        const userId = req.params.uid;
+        const movie = new Movie(req.body); 
+        await movie.save(); 
+
+        await User.findByIdAndUpdate(userId, { $addToSet: { movies: movie._id } });
+        res.status(200).send('Movie added to list');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
 app.get('/list/:uid', async (req, res) => {
-    // get all movies in user's list
+    try {
+        const userId = req.params.uid;
+        const user = await User.findById(userId).populate('movies');
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        res.status(200).json(user.movies);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
 app.delete('/list/:uid', async (req, res) => {
     //delete a movie from user's list
     // include mongodb _id of the movie as req.query[_id]
+    try {
+        const userId = req.params.uid;
+        const movieId = req.query._id; 
+
+        await User.findByIdAndUpdate(userId, { $pull: { movies: movieId } });
+        res.status(200).send('Movie removed from list');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
 app.post('/movie/like/:_id', async (req, res) => {
 // include mongodb user's _id as req.query[uid]
+    try {
+        const movieId = req.params._id;
+        const userId = req.query.uid; 
+
+        const user = await User.findById(userId);
+        if (!user) {
+        return res.status(404).send('User not found');
+        }
+
+        const movie = await Movie.findById(movieId);
+        if (!movie) {
+            return res.status(404).send('Movie not found');
+        }
+
+        if (movie.likedBy && movie.likedBy.includes(userId)) {
+            return res.status(400).send('User already liked this movie');
+        }
+
+        const update = {
+            $inc: { likes: 1 },
+            $push: { likedBy: userId }
+        };
+        await Movie.findByIdAndUpdate(movieId, update, { new: true, upsert: true });
+
+        res.status(200).send('Movie liked');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
 app.post('/movie/reviews/:_id', async (req, res) => {
