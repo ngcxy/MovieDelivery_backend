@@ -24,6 +24,7 @@ class TmdbApi {
     async getMovieProvider(id) {
         try {
             const info = await this.api.get(`movie/${id}/watch/providers`);
+            console.log(info.data.results.US);
             if (info.data.results.US){
                 const res = info.data.results.US;
                 return {
@@ -45,24 +46,51 @@ class TmdbApi {
         const result = [];
         const provider = new Set();
 
-        for (let rent of res.rent) {
-            if (rent.display_priority <= 20) {
-                result.push({
-                    provider_name: rent.provider_name,
-                    logo_path: rent.logo_path
-                });
-                provider.add(rent.provider_name);
+        if (res.rent){
+            for (let rent of res.rent) {
+                if (rent.display_priority <= 20) {
+                    result.push({
+                        provider_name: rent.provider_name,
+                        logo_path: rent.logo_path
+                    });
+                    provider.add(rent.provider_name);
+                }
             }
         }
-        for (let buy of res.buy) {
-            if (buy.display_priority <= 20 && !provider.has(buy.provider_name)) {
-                result.push({
-                    provider_name: buy.provider_name,
-                    logo_path: buy.logo_path
-                });
-                provider.add(buy.provider_name);
+        if (res.buy) {
+            for (let buy of res.buy) {
+                if (buy.display_priority <= 20 && !provider.has(buy.provider_name)) {
+                    result.push({
+                        provider_name: buy.provider_name,
+                        logo_path: buy.logo_path
+                    });
+                    provider.add(buy.provider_name);
+                }
             }
         }
+        if (res.ads) {
+            for (let ads of res.ads) {
+                if (ads.display_priority <= 20 && !provider.has(ads.provider_name)) {
+                    result.push({
+                        provider_name: ads.provider_name,
+                        logo_path: ads.logo_path
+                    });
+                    provider.add(ads.provider_name);
+                }
+            }
+        }
+        if (res.flatrate) {
+            for (let flatrate of res.flatrate) {
+                if (flatrate.display_priority <= 20 && !provider.has(flatrate.provider_name)) {
+                    result.push({
+                        provider_name: flatrate.provider_name,
+                        logo_path: flatrate.logo_path
+                    });
+                    provider.add(flatrate.provider_name);
+                }
+            }
+        }
+
         return result;
     }
 

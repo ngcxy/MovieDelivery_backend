@@ -17,47 +17,43 @@ const db = new SourceMongo();
 app.get('/ping', (req, res) => {
     res.status(204).send();
 })
-
 app.get('/movies/', async (req, res) => {
     const m = await db.getAllMovies();
     res.status(200).send(m);
 })
-
 app.get('/movies/search', async (req, res) => {
     const result = await db.searchMovie(req.query.q);
     res.status(200).send(result);
 })
-
 app.get('/movies/:_id', async (req, res) => {
     const m = await db.getMovie(req.params._id);
     res.status(200).send(m);
 })
-
 app.get('/movies/:_id/ratings', async (req, res) => {
     const r = await db.getMovieRating(req.params._id);
     res.status(200).send(r);
 })
-
 app.get('/movies/:_id/providers', async (req, res) => {
     const p = await db.getMovieProvider(req.params._id);
     res.status(200).send(p);
 })
-
 app.get('/movies/:_id/videos', async (req, res) => {
     const v = await db.getMovieVideo(req.params._id);
     res.status(200).send(v);
 })
-
 app.get('/movies/:_id/reviews', async (req, res) => {
 
 })
-
 app.get('/posts', async (req, res) => {
 
 })
 
 
 // user operation
+
+app.post('/users/:uid', async (req, res) => {
+    // get all movies in user's list
+})
 
 app.post('/list/:uid', async (req, res) => {
     // add a movie into user's list
@@ -96,7 +92,6 @@ app.post('/recommend/:uid', async (req, res) => {
 // admin movie management
 app.post('/movie/:tmid', async (req, res) => {
     const m = await db.addMovie(req.params.tmid);
-    console.log("add movie id: ", req.params.tmid);
     res.status(200).send(m);
 })
 
