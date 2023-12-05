@@ -133,12 +133,30 @@ class SourceMongo {
         let user = await this.users.findOne({email:email});
         if (user) {
             console.log("Called: get user, email: ", email);
-            return user
+            return user;
         }
     }
 
-    async addUser(email) {
+    async addUser(email,name) {
         let timestamp = new Date();
+
+        const newUser = {
+            email: email,
+            name: name,
+            list: [],
+            like: [],
+            dislike: [],
+            created_at: timestamp
+        };
+
+        try {
+            const result = await this.users.insertOne(newUser);
+            console.log("Called: add user", result.insertedId);
+            return result.insertedId; 
+        } catch (error) {
+                console.error('Error adding new user:', error);
+                throw error; 
+        }
     }
 }
 
