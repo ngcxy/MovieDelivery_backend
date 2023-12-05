@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const PORT = 4000;
 const app = express();
@@ -11,6 +12,7 @@ const {SourceMongo} = require(`${__dirname}/sourceMongo.js`);
 // app.use(express.static('public'));
 
 app.use(cors());
+app.use(bodyParser.json());
 
 const db = new SourceMongo();
 
@@ -18,28 +20,53 @@ app.get('/ping', (req, res) => {
     res.status(204).send();
 })
 app.get('/movies/', async (req, res) => {
-    const m = await db.getAllMovies();
-    res.status(200).send(m);
+    try {
+        const m = await db.getAllMovies();
+        res.status(200).send(m);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 app.get('/movies/search', async (req, res) => {
-    const result = await db.searchMovie(req.query.q);
-    res.status(200).send(result);
+    try {
+        const result = await db.searchMovie(req.query.q);
+        res.status(200).send(result);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+
 })
 app.get('/movies/:_id', async (req, res) => {
-    const m = await db.getMovie(req.params._id);
-    res.status(200).send(m);
+    try {
+        const m = await db.getMovie(req.params._id);
+        res.status(200).send(m);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 app.get('/movies/:_id/ratings', async (req, res) => {
-    const r = await db.getMovieRating(req.params._id);
-    res.status(200).send(r);
+    try {
+        const r = await db.getMovieRating(req.params._id);
+        res.status(200).send(r);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 app.get('/movies/:_id/providers', async (req, res) => {
-    const p = await db.getMovieProvider(req.params._id);
-    res.status(200).send(p);
+    try {
+        const p = await db.getMovieProvider(req.params._id);
+        res.status(200).send(p);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 app.get('/movies/:_id/videos', async (req, res) => {
-    const v = await db.getMovieVideo(req.params._id);
-    res.status(200).send(v);
+    try {
+        const v = await db.getMovieVideo(req.params._id);
+        res.status(200).send(v);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 app.get('/movies/:_id/reviews', async (req, res) => {
 
@@ -51,40 +78,87 @@ app.get('/posts', async (req, res) => {
 
 // user operation
 
-app.post('/users/:uid', async (req, res) => {
-    // get all movies in user's list
+app.post('/users', async (req, res) => {
+    try{
+        const user = await db.addUser(req.body);
+        if (user) {
+            res.status(200).send(user);
+        }
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
-app.post('/list/:uid', async (req, res) => {
-    // add a movie into user's list
-    // include mongodb _id of the movie as req.query[_id]
+app.get('/users/:uid/list', async (req, res) => {
+    try {
+        const uid = req.params.uid;
+        const user = db.getUserById(uid);
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        res.status(200).json(user.list_movie);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
-app.get('/list/:uid', async (req, res) => {
-    // get all movies in user's list
+app.post('/users/:uid/list', async (req, res) => {
+    try {
+        await db.addUserList(req.params.uid, req.body.mid);    // movie id passed as req.body
+        res.status(200).send('Movie added to list');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
-app.delete('/list/:uid', async (req, res) => {
-    //delete a movie from user's list
-    // include mongodb _id of the movie as req.query[_id]
+app.delete('/list/:uid/list', async (req, res) => {
+    try {
+        await db.removeUserList(req.params.uid, req.body.mid);    // movie id passed as req.body
+        res.status(200).send('Movie removed from list');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
-app.post('/movie/like/:_id', async (req, res) => {
-// include mongodb user's _id as req.query[uid]
+app.post('/users/:uid/like', async (req, res) => {
+    try {
+        await db.addUserLike(req.params.uid, req.body.mid);    // movie id passed as req.body
+        res.status(200).send('Movie added to like');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
+
+app.delete('/list/:uid/like', async (req, res) => {
+    try {
+        await db.removeUserList(req.params.uid, req.body.mid);    // movie id passed as req.body
+        res.status(200).send('Movie removed from like');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
+
+app.post('/users/:uid/dislike', async (req, res) => {
+    try {
+        await db.addUserDislike(req.params.uid, req.body.mid);    // movie id passed as req.body
+        res.status(200).send('Movie added to dislike');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
+
+app.delete('/list/:uid/dislike', async (req, res) => {
+    try {
+        await db.removeUserDislike(req.params.uid, req.body.mid);    // movie id passed as req.body
+        res.status(200).send('Movie removed from dislike');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 })
 
 app.post('/movie/reviews/:_id', async (req, res) => {
 
 })
-
-app.post('/post/:uid', async (req, res) => {
-
-})
-
-app.delete('/post/:uid', async (req, res) => {
-
-})
-
 app.post('/recommend/:uid', async (req, res) => {
 
 })

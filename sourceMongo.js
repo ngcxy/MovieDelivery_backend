@@ -133,12 +133,59 @@ class SourceMongo {
         let user = await this.users.findOne({email:email});
         if (user) {
             console.log("Called: get user, email: ", email);
-            return user
+            return user;
         }
     }
 
-    async addUser(email) {
+    async addUser(info) {
         let timestamp = new Date();
+        const newUser = {
+            email: info.email,
+            name: info.name,
+            list: [],
+            like: [],
+            dislike: [],
+            created_at: timestamp
+        };
+
+        try {
+            const result = await this.users.insertOne(newUser);
+            console.log("Called: add user", result.insertedId);
+            return result.insertedId;
+        } catch (error) {
+            console.error('Error adding new user:', error);
+            throw error;
+        }
+    }
+
+    async addUserList(uid, mid) {
+        await this.users.updateOne(uid, { $addToSet: { list_movie: mid } })
+        console.log("Called: add movie to user's list");
+    }
+
+    async removeUserList(uid, mid) {
+        await this.users.updateOne(uid, { $pull: { list_movie: mid } })
+        console.log("Called: remove movie to user's list");
+    }
+
+    async addUserLike(uid, mid) {
+        await this.users.updateOne(uid, { $addToSet: { like: mid } })
+        console.log("Called: add movie to user like");
+    }
+
+    async removeUserLike(uid, mid) {
+        await this.users.updateOne(uid, { $pull: { like: mid } })
+        console.log("Called: remove movie to user like");
+    }
+
+    async addUserDislike(uid, mid) {
+        await this.users.updateOne(uid, { $addToSet: { dislike: mid } })
+        console.log("Called: add movie to user dislike");
+    }
+
+    async removeUserDislike(uid, mid) {
+        await this.users.updateOne(uid, { $pull: { dislike: mid } })
+        console.log("Called: remove movie to user dislike");
     }
 }
 
