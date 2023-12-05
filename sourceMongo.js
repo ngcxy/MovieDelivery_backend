@@ -25,9 +25,9 @@ class SourceMongo {
 
         const database = client.db("547final");
         this._db = database;
-        this.user = database.collection("user");
+        this.users = database.collection("user");
         this.movies = database.collection("movie");
-        this.list = database.collection("list");
+        // this.list = database.collection("list");
     }
 
     async getAllMovies() {
@@ -94,7 +94,7 @@ class SourceMongo {
         if (movie) {
             const release_date = movie.release_date;
             await this.movies.insertOne({
-                creat_time: timestamp,
+                create_time: timestamp,
                 tmid:id,
                 title: movie.title,
                 year: release_date.slice(0,4),
@@ -118,6 +118,27 @@ class SourceMongo {
             return true;
         }
         return false;
+    }
+
+    async getUserById(_id) {
+        let user = await this.users.findOne({_id:new ObjectId(_id)});
+        if (user) {
+            // const email = user.email;
+            console.log("Called: get user, _id: ", _id);
+            return user;
+        }
+    }
+
+    async getUserByEmail(email) {
+        let user = await this.users.findOne({email:email});
+        if (user) {
+            console.log("Called: get user, email: ", email);
+            return user
+        }
+    }
+
+    async addUser(email) {
+        let timestamp = new Date();
     }
 }
 
