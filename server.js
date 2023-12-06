@@ -100,18 +100,18 @@ app.get('/users/:google_id', async (req, res) => {
     }
 })
 
-app.get('/users/:uid/list', async (req, res) => {
-    try {
-        const uid = req.params.uid;
-        const user = db.getUserById(uid);
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-        res.status(200).json(user.list_movie);
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-})
+// app.get('/users/:uid/list', async (req, res) => {
+//     try {
+//         const uid = req.params.uid;
+//         const user = db.getUserByGoogleId(uid);
+//         if (!user) {
+//             return res.status(404).send('User not found');
+//         }
+//         res.status(200).json(user.list_movie);
+//     } catch (error) {
+//         res.status(500).send(error.message);
+//     }
+// })
 
 app.post('/users/:uid/list', async (req, res) => {
     try {
@@ -122,7 +122,7 @@ app.post('/users/:uid/list', async (req, res) => {
     }
 })
 
-app.delete('/list/:uid/list', async (req, res) => {
+app.delete('/users/:uid/list', async (req, res) => {
     try {
         await db.removeUserList(req.params.uid, req.body.mid);    // movie id passed as req.body
         res.status(200).send('Movie removed from list');
@@ -140,7 +140,7 @@ app.post('/users/:uid/like', async (req, res) => {
     }
 })
 
-app.delete('/list/:uid/like', async (req, res) => {
+app.delete('/users/:uid/like', async (req, res) => {
     try {
         await db.removeUserList(req.params.uid, req.body.mid);    // movie id passed as req.body
         res.status(200).send('Movie removed from like');
@@ -158,7 +158,7 @@ app.post('/users/:uid/dislike', async (req, res) => {
     }
 })
 
-app.delete('/list/:uid/dislike', async (req, res) => {
+app.delete('/users/:uid/dislike', async (req, res) => {
     try {
         await db.removeUserDislike(req.params.uid, req.body.mid);    // movie id passed as req.body
         res.status(200).send('Movie removed from dislike');

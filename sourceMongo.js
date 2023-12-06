@@ -167,32 +167,35 @@ class SourceMongo {
     }
 
     async addUserList(uid, mid) {
-        await this.users.updateOne(uid, { $addToSet: { list_movie: mid } })
+        await this.users.updateOne({google_id: uid},{$push: {list_movie: mid}});
         console.log("Called: add movie to user's list");
     }
 
     async removeUserList(uid, mid) {
-        await this.users.updateOne(uid, { $pull: { list_movie: mid } })
+        await this.users.updateOne({$and: [{ google_id: uid }, { list_movie:{$in:[mid]}}]},
+                                    {$pull: { list_movie: mid }});
         console.log("Called: remove movie to user's list");
     }
 
     async addUserLike(uid, mid) {
-        await this.users.updateOne(uid, { $addToSet: { like: mid } })
+        await this.users.updateOne({google_id: uid},{$push: {like: mid}});
         console.log("Called: add movie to user like");
     }
 
     async removeUserLike(uid, mid) {
-        await this.users.updateOne(uid, { $pull: { like: mid } })
+        await this.users.updateOne({$and: [{ google_id: uid }, { like:{$in:[mid]}}]},
+            {$pull: { like: mid }});
         console.log("Called: remove movie to user like");
     }
 
     async addUserDislike(uid, mid) {
-        await this.users.updateOne(uid, { $addToSet: { dislike: mid } })
+        await this.users.updateOne({google_id: uid},{$push: {dislike: mid}});
         console.log("Called: add movie to user dislike");
     }
 
     async removeUserDislike(uid, mid) {
-        await this.users.updateOne(uid, { $pull: { dislike: mid } })
+        await this.users.updateOne({$and: [{ google_id: uid }, { dislike:{$in:[mid]}}]},
+            {$pull: { dislike: mid }});
         console.log("Called: remove movie to user dislike");
     }
 }
