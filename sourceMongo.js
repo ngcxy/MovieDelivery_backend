@@ -137,12 +137,20 @@ class SourceMongo {
         }
     }
 
+<<<<<<< HEAD
     async addUser(email,name) {
         let timestamp = new Date();
 
         const newUser = {
             email: email,
             name: name,
+=======
+    async addUser(info) {
+        let timestamp = new Date();
+        const newUser = {
+            email: info.email,
+            name: info.name,
+>>>>>>> 0674f6de12a8b735e554bcf128c51b5098b0890a
             list: [],
             like: [],
             dislike: [],
@@ -152,11 +160,49 @@ class SourceMongo {
         try {
             const result = await this.users.insertOne(newUser);
             console.log("Called: add user", result.insertedId);
+<<<<<<< HEAD
             return result.insertedId; 
         } catch (error) {
                 console.error('Error adding new user:', error);
                 throw error; 
         }
+=======
+            return result.insertedId;
+        } catch (error) {
+            console.error('Error adding new user:', error);
+            throw error;
+        }
+    }
+
+    async addUserList(uid, mid) {
+        await this.users.updateOne(uid, { $addToSet: { list_movie: mid } })
+        console.log("Called: add movie to user's list");
+    }
+
+    async removeUserList(uid, mid) {
+        await this.users.updateOne(uid, { $pull: { list_movie: mid } })
+        console.log("Called: remove movie to user's list");
+    }
+
+    async addUserLike(uid, mid) {
+        await this.users.updateOne(uid, { $addToSet: { like: mid } })
+        console.log("Called: add movie to user like");
+    }
+
+    async removeUserLike(uid, mid) {
+        await this.users.updateOne(uid, { $pull: { like: mid } })
+        console.log("Called: remove movie to user like");
+    }
+
+    async addUserDislike(uid, mid) {
+        await this.users.updateOne(uid, { $addToSet: { dislike: mid } })
+        console.log("Called: add movie to user dislike");
+    }
+
+    async removeUserDislike(uid, mid) {
+        await this.users.updateOne(uid, { $pull: { dislike: mid } })
+        console.log("Called: remove movie to user dislike");
+>>>>>>> 0674f6de12a8b735e554bcf128c51b5098b0890a
     }
 }
 
