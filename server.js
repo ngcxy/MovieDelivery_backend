@@ -89,6 +89,17 @@ app.post('/users', async (req, res) => {
     }
 })
 
+app.get('/users/:google_id', async (req, res) => {
+    try{
+        const user = await db.getUserByGoogleId(req.params.google_id);
+        if (user) {
+            res.status(200).send(user);
+        }
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
+
 app.get('/users/:uid/list', async (req, res) => {
     try {
         const uid = req.params.uid;

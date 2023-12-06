@@ -123,8 +123,15 @@ class SourceMongo {
     async getUserById(_id) {
         let user = await this.users.findOne({_id:new ObjectId(_id)});
         if (user) {
-            // const email = user.email;
             console.log("Called: get user, _id: ", _id);
+            return user;
+        }
+    }
+
+    async getUserByGoogleId(gid) {
+        let user = await this.users.findOne({google_id: gid});
+        if (user) {
+            console.log("Called: get user, google_id: ", gid);
             return user;
         }
     }
@@ -140,6 +147,7 @@ class SourceMongo {
     async addUser(info) {
         let timestamp = new Date();
         const newUser = {
+            google_id: info.google_id,
             email: info.email,
             name: info.name,
             list: [],
