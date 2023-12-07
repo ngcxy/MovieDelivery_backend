@@ -136,18 +136,10 @@ class SourceMongo {
         }
     }
 
-    async getUserByEmail(email) {
-        let user = await this.users.findOne({email:email});
-        if (user) {
-            console.log("Called: get user, email: ", email);
-            return user;
-        }
-    }
-
-    async addUser(info) {
+    async updateUser(info) {
         let timestamp = new Date();
         const newUser = {
-            google_id: info.google_id,
+            google_id: info.id,
             email: info.email,
             name: info.name,
             list: [],
@@ -157,9 +149,12 @@ class SourceMongo {
         };
 
         try {
-            const result = await this.users.insertOne(newUser);
-            console.log("Called: add user", result.insertedId);
-            return result.insertedId;
+            let result = await this.users.findOne({google_id: info.id});
+            if (!result) {
+                result = await this.users.insertOne(newUser);
+                console.log("Called: add user", result.insertedId);
+            }
+            return newUser.google_id;
         } catch (error) {
             console.error('Error adding new user:', error);
             throw error;
@@ -170,7 +165,6 @@ class SourceMongo {
         const user = await this.users.findOne({google_id: uid});
         const movieIds = user.list_movie.map(id => new ObjectId(id));
         const movies = await this.movies.find({_id: { $in: movieIds} }).toArray();
-        console.log(movies);
         console.log("Called: get movies in user's list");
         return movies;
     }

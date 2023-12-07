@@ -79,8 +79,9 @@ app.get('/posts', async (req, res) => {
 // user operation
 
 app.post('/users', async (req, res) => {
+    console.log(req.body);
     try{
-        const user = await db.addUser(req.body);
+        const user = await db.updateUser(req.body);
         if (user) {
             res.status(200).send(user);
         }
@@ -101,10 +102,8 @@ app.get('/users/:uid', async (req, res) => {
 })
 
 app.get('/users/:uid/list', async (req, res) => {
-    console.log(11111111111);
     try{
         const movies = await db.getUserListMovie(req.params.uid);
-        console.log(movies);
         if (movies) {
             res.status(200).send(movies);
         }
