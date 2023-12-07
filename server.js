@@ -83,6 +83,8 @@ app.post('/users', async (req, res) => {
         const user = await db.addUser(req.body);
         if (user) {
             res.status(200).send(user);
+        } else {
+            res.status(400).send("User could not be created");
         }
     } catch (error) {
         res.status(500).send(error.message);
@@ -94,6 +96,8 @@ app.get('/users/:google_id', async (req, res) => {
         const user = await db.getUserByGoogleId(req.params.google_id);
         if (user) {
             res.status(200).send(user);
+        } else {
+            res.status(404).send("User not found");
         }
     } catch (error) {
         res.status(500).send(error.message);

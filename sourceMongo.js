@@ -123,15 +123,8 @@ class SourceMongo {
     async getUserById(_id) {
         let user = await this.users.findOne({_id:new ObjectId(_id)});
         if (user) {
+            // const email = user.email;
             console.log("Called: get user, _id: ", _id);
-            return user;
-        }
-    }
-
-    async getUserByGoogleId(gid) {
-        let user = await this.users.findOne({google_id: gid});
-        if (user) {
-            console.log("Called: get user, google_id: ", gid);
             return user;
         }
     }
@@ -144,21 +137,12 @@ class SourceMongo {
         }
     }
 
-<<<<<<< HEAD
-    async addUser(email,name) {
-        let timestamp = new Date();
-
-        const newUser = {
-            email: email,
-            name: name,
-=======
     async addUser(info) {
         let timestamp = new Date();
         const newUser = {
-            google_id: info.google_id,
+            google_id: info.google_id, 
             email: info.email,
             name: info.name,
->>>>>>> 0674f6de12a8b735e554bcf128c51b5098b0890a
             list: [],
             like: [],
             dislike: [],
@@ -168,13 +152,6 @@ class SourceMongo {
         try {
             const result = await this.users.insertOne(newUser);
             console.log("Called: add user", result.insertedId);
-<<<<<<< HEAD
-            return result.insertedId; 
-        } catch (error) {
-                console.error('Error adding new user:', error);
-                throw error; 
-        }
-=======
             return result.insertedId;
         } catch (error) {
             console.error('Error adding new user:', error);
@@ -210,7 +187,6 @@ class SourceMongo {
     async removeUserDislike(uid, mid) {
         await this.users.updateOne(uid, { $pull: { dislike: mid } })
         console.log("Called: remove movie to user dislike");
->>>>>>> 0674f6de12a8b735e554bcf128c51b5098b0890a
     }
 }
 
