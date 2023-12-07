@@ -166,37 +166,47 @@ class SourceMongo {
         }
     }
 
+    async getUserListMovie(uid) {
+        const user = await this.users.findOne({google_id: uid});
+        const movieIds = user.list_movie.map(id => new ObjectId(id));
+        const movies = await this.movies.find({_id: { $in: movieIds} }).toArray();
+        console.log(movies);
+        console.log("Called: get movies in user's list");
+        return movies;
+    }
+
     async addUserList(uid, mid) {
         await this.users.updateOne({google_id: uid},{$push: {list_movie: mid}});
         console.log("Called: add movie to user's list");
     }
 
     async removeUserList(uid, mid) {
-        await this.users.updateOne({$and: [{ google_id: uid }, { list_movie:{$in:[mid]}}]},
-                                    {$pull: { list_movie: mid }});
-        console.log("Called: remove movie to user's list");
+        await this.users.updateOne({$and: [{ google_id: uid }, { list_movie:{$in:[mid]}}]}, {$pull: { list_movie: mid }});
+        console.log("Called: remove movie from user's list");
     }
 
     async addUserLike(uid, mid) {
         await this.users.updateOne({google_id: uid},{$push: {like: mid}});
+        await this.movies.updateOne({_id: mid}, {$inc: {like: 1}});
         console.log("Called: add movie to user like");
     }
 
     async removeUserLike(uid, mid) {
-        await this.users.updateOne({$and: [{ google_id: uid }, { like:{$in:[mid]}}]},
-            {$pull: { like: mid }});
-        console.log("Called: remove movie to user like");
+        await this.users.updateOne({$and: [{ google_id: uid }, { like:{$in:[mid]}}]}, {$pull: { like: mid }});
+        await this.movies.updateOne({_id: mid}, {$inc: {like: -1}});
+        console.log("Called: remove movie from user like");
     }
 
     async addUserDislike(uid, mid) {
         await this.users.updateOne({google_id: uid},{$push: {dislike: mid}});
+        await this.movies.updateOne({_id: mid}, {$inc: {dislike: 1}});
         console.log("Called: add movie to user dislike");
     }
 
     async removeUserDislike(uid, mid) {
-        await this.users.updateOne({$and: [{ google_id: uid }, { dislike:{$in:[mid]}}]},
-            {$pull: { dislike: mid }});
-        console.log("Called: remove movie to user dislike");
+        await this.users.updateOne({$and: [{ google_id: uid }, { dislike:{$in:[mid]}}]}, {$pull: { dislike: mid }});
+        await this.movies.updateOne({_id: mid}, {$inc: {dislike: -1}});
+        console.log("Called: remove movie from user dislike");
     }
 }
 
