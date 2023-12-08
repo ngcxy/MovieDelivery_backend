@@ -68,8 +68,46 @@ app.get('/movies/:_id/videos', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-app.get('/movies/:_id/reviews', async (req, res) => {
+app.post('/movies/:_id/reviews', async (req, res) => {
+    try {
+        const movieId = req.params.mid; 
+        const reviewData = req.body; 
+        const userId = req.body.uid;          
 
+        const newReview = await db.addReview(movieId, userId, reviewData);
+        
+        res.status(201).json(newReview);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
+app.get('/movies/:_id/reviews', async (req, res) => {
+    try {
+        const movieId = req.params._id;
+
+        const reviews = await db.collection('reviews').find({ movieId: movieId }).toArray();
+
+        if (reviews.length === 0) {
+            return res.status(404).json({ message: "No reviews found for this movie." });
+        }
+
+        res.status(200).json(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        res.status(500).send('Internal server error.');
+    }
+})
+app.delete('/reviews/:rid', async (req, res) => {
+    try {
+        const reviewId = req.params.rid;
+
+        const result = await db.deleteReview(reviewId);
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        res.status(500).send('Internal server error');
+    }
 })
 app.get('/posts', async (req, res) => {
 
@@ -170,9 +208,7 @@ app.delete('/users/:uid/dislike', async (req, res) => {
     }
 })
 
-app.post('/movie/reviews/:_id', async (req, res) => {
 
-})
 app.post('/recommend/:uid', async (req, res) => {
 
 })

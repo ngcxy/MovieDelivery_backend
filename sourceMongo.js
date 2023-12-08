@@ -203,6 +203,57 @@ class SourceMongo {
         await this.movies.updateOne({_id: mid}, {$inc: {dislike: -1}});
         console.log("Called: remove movie from user dislike");
     }
+
+    async addReview(uid, mid, reviewData) {
+        try {
+            const newReview = {
+                movie_id: new ObjectId(mid), 
+                user_id: new ObjectId(uid), 
+                content: reviewData.content, 
+                created_at: new Date() 
+            };
+            const result = await this._db.collection('reviews').insertOne(newReview);
+            return result.ops[0]; 
+        } catch (error) {
+            console.error('Error adding new review:', error);
+            throw error;
+        }
+    }
+
+    async updateReview(rid, updateData) {
+        try {
+            const result = await this._db.collection('reviews').updateOne(
+                { _id: new ObjectId(rid) },
+                { $set: updateData }
+            );
+
+            if (result.matchedCount === 0) {
+                throw new Error('No review found with the given ID');
+            }
+
+            return { updated: true, id: rid };
+        } catch (error) {
+            console.error('Error updating review:', error);
+            throw error;
+        }
+    }
+    async deleteReview(rid) {
+        try {
+            const result = await this._db.collection('reviews').deleteOne(
+                { _id: new ObjectId(rid) }
+            );
+
+            if (result.deletedCount === 0) {
+                throw new Error('No review found with the given ID');
+            }
+
+            return { deleted: true, id: rid };
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            throw error;
+        }
+    }
+
 }
 
 exports.SourceMongo = SourceMongo;
