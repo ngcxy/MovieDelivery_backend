@@ -5,6 +5,7 @@ const PORT = 4000;
 const app = express();
 
 const {SourceMongo} = require(`${__dirname}/sourceMongo.js`);
+const config = require(`${__dirname}/config.js`)
 
 // app.set('view engine', 'ejs');
 // app.use(express.json());
@@ -68,8 +69,48 @@ app.get('/movies/:_id/videos', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-app.get('/movies/:_id/reviews', async (req, res) => {
+app.post('/movies/:_id/reviews', async (req, res) => {
+    try {
+        const movieId = req.params._id;
+        const reviewData = req.body.review;
+        const userId = req.body.uid;
+        const userName = req.body.name;
+        console.log("111", movieId, userId, reviewData)
 
+        const newReview = await db.addReview(movieId, userId, userName, reviewData);
+
+        res.status(201).send(newReview);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
+app.get('/movies/:_id/reviews', async (req, res) => {
+    try {
+        const movieId = req.params._id;
+        const reviews = await db.getReview(movieId);
+        console.log(reviews);
+
+        // if (reviews.length === 0) {
+        //     return res.status(404).json({ message: "No reviews found for this movie." });
+        // }
+
+        res.status(200).json(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        res.status(500).send('Internal server error.');
+    }
+})
+app.delete('/reviews/:rid', async (req, res) => {
+    try {
+        const reviewId = req.params.rid;
+
+        const result = await db.deleteReview(reviewId);
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        res.status(500).send('Internal server error');
+    }
 })
 app.get('/posts', async (req, res) => {
 
@@ -89,7 +130,6 @@ app.post('/users', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
 app.get('/users/:uid', async (req, res) => {
     try{
         const user = await db.getUserByGoogleId(req.params.uid);
@@ -100,7 +140,6 @@ app.get('/users/:uid', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
 app.get('/users/:uid/list', async (req, res) => {
     try{
         const movies = await db.getUserListMovie(req.params.uid);
@@ -111,7 +150,6 @@ app.get('/users/:uid/list', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
 app.post('/users/:uid/list', async (req, res) => {
     try {
         await db.addUserList(req.params.uid, req.body.mid);    // movie id passed as req.body
@@ -120,7 +158,6 @@ app.post('/users/:uid/list', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
 app.delete('/users/:uid/list', async (req, res) => {
     try {
         await db.removeUserList(req.params.uid, req.body.mid);    // movie id passed as req.body
@@ -129,7 +166,6 @@ app.delete('/users/:uid/list', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
 app.post('/users/:uid/like', async (req, res) => {
     try {
         await db.addUserLike(req.params.uid, req.body.mid);    // movie id passed as req.body
@@ -138,7 +174,6 @@ app.post('/users/:uid/like', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
 app.delete('/users/:uid/like', async (req, res) => {
     try {
         await db.removeUserLike(req.params.uid, req.body.mid);    // movie id passed as req.body
@@ -147,7 +182,6 @@ app.delete('/users/:uid/like', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
 app.post('/users/:uid/dislike', async (req, res) => {
     try {
         await db.addUserDislike(req.params.uid, req.body.mid);    // movie id passed as req.body
@@ -156,7 +190,6 @@ app.post('/users/:uid/dislike', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
 app.delete('/users/:uid/dislike', async (req, res) => {
     try {
         await db.removeUserDislike(req.params.uid, req.body.mid);    // movie id passed as req.body
@@ -165,21 +198,16 @@ app.delete('/users/:uid/dislike', async (req, res) => {
         res.status(500).send(error.message);
     }
 })
-
-app.post('/movie/reviews/:_id', async (req, res) => {
-
-})
 app.post('/recommend/:uid', async (req, res) => {
 
 })
 
 // admin movie management
-app.post('/movie/:tmid', async (req, res) => {
+app.post('/movies/:tmid', async (req, res) => {
     const m = await db.addMovie(req.params.tmid);
     res.status(200).send(m);
 })
-
-app.delete('/api/player/:tmid', async (req,res) => {
+app.delete('/api/movies/:tmid', async (req,res) => {
     if (await db.deleteMovie(req.params.tmid)) {
         res.sendStatus(200);
     } else {
