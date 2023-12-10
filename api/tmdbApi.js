@@ -24,7 +24,6 @@ class TmdbApi {
     async getMovieProvider(id) {
         try {
             const info = await this.api.get(`movie/${id}/watch/providers`);
-            console.log(info.data.results.US);
             if (info.data.results.US){
                 const res = info.data.results.US;
                 return {

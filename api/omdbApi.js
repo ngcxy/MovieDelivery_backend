@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-class OmdbAPI {
+class OmdbApi {
 
     async getMovieRating(id) {
         const info = await axios.get(`http://www.omdbapi.com/?i=${id}&apikey=305412f9`);
@@ -13,4 +13,4 @@ class OmdbAPI {
 
 }
 
-exports.OmdbApi = OmdbAPI;
+exports.OmdbApi = OmdbApi;

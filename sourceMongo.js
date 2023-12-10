@@ -63,10 +63,16 @@ class SourceMongo {
     }
 
     async getMovieRating(_id) {
-        let movie= await this.getMovie(_id);
+        let movie = await this.movies.findOne({_id:new ObjectId(_id)});
+        let rating = movie.like/(movie.dislike+movie.like) * 100;
+        rating = `${rating.toFixed(0)}%`;
+        movie= await this.getMovie(_id);
         if (movie) {
             console.log("Called: get movie rating, _id: ", _id);
-            return this.omdb.getMovieRating(movie.imdb_id);
+            return {
+                local: rating,
+                ...await this.omdb.getMovieRating(movie.imdb_id)
+            };
         }
     }
 
@@ -182,38 +188,44 @@ class SourceMongo {
 
     async addUserLike(uid, mid) {
         await this.users.updateOne({google_id: uid},{$push: {like: mid}});
-        await this.movies.updateOne({_id: mid}, {$inc: {like: 1}});
+        const res = await this.movies.updateOne({_id: new ObjectId(mid)}, {$inc: {like: 1}});
+        console.log(res);
         console.log("Called: add movie to user like");
     }
 
     async removeUserLike(uid, mid) {
         await this.users.updateOne({$and: [{ google_id: uid }, { like:{$in:[mid]}}]}, {$pull: { like: mid }});
-        await this.movies.updateOne({_id: mid}, {$inc: {like: -1}});
+        await this.movies.updateOne({__id: new ObjectId(mid)}, {$inc: {like: -1}});
         console.log("Called: remove movie from user like");
     }
 
     async addUserDislike(uid, mid) {
         await this.users.updateOne({google_id: uid},{$push: {dislike: mid}});
-        await this.movies.updateOne({_id: mid}, {$inc: {dislike: 1}});
+        await this.movies.updateOne({_id: new ObjectId(mid)}, {$inc: {dislike: 1}});
         console.log("Called: add movie to user dislike");
     }
 
     async removeUserDislike(uid, mid) {
         await this.users.updateOne({$and: [{ google_id: uid }, { dislike:{$in:[mid]}}]}, {$pull: { dislike: mid }});
-        await this.movies.updateOne({_id: mid}, {$inc: {dislike: -1}});
+        await this.movies.updateOne({_id: new ObjectId(mid)}, {$inc: {dislike: -1}});
         console.log("Called: remove movie from user dislike");
     }
 
-    async addReview(uid, mid, reviewData) {
+    async getReview(_id) {
+        return this._db.collection('reviews').find({ movie_id: new ObjectId(_id) }).sort({ created_at: -1 }).toArray();
+    }
+
+    async addReview(mid, uid, username, reviewData) {
         try {
             const newReview = {
-                movie_id: new ObjectId(mid), 
-                user_id: new ObjectId(uid), 
-                content: reviewData.content, 
-                created_at: new Date() 
+                movie_id: new ObjectId(mid),
+                user_google_id: uid,
+                user_name: username,
+                content: reviewData,
+                created_at: new Date()
             };
             const result = await this._db.collection('reviews').insertOne(newReview);
-            return result.ops[0]; 
+            return result[0];
         } catch (error) {
             console.error('Error adding new review:', error);
             throw error;
