@@ -27,7 +27,6 @@ class SourceMongo {
         this._db = database;
         this.users = database.collection("user");
         this.movies = database.collection("movie");
-        // this.list = database.collection("list");
     }
 
     async getAllMovies() {
@@ -187,14 +186,13 @@ class SourceMongo {
 
     async addUserLike(uid, mid) {
         await this.users.updateOne({google_id: uid},{$push: {like: mid}});
-        const res = await this.movies.updateOne({_id: new ObjectId(mid)}, {$inc: {like: 1}});
-        console.log(res);
+        await this.movies.updateOne({_id: new ObjectId(mid)}, {$inc: {like: 1}});
         console.log("Called: add movie to user like");
     }
 
     async removeUserLike(uid, mid) {
         await this.users.updateOne({$and: [{ google_id: uid }, { like:{$in:[mid]}}]}, {$pull: { like: mid }});
-        await this.movies.updateOne({__id: new ObjectId(mid)}, {$inc: {like: -1}});
+        await this.movies.updateOne({_id: new ObjectId(mid)}, {$inc: {like: -1}});
         console.log("Called: remove movie from user like");
     }
 
@@ -261,6 +259,37 @@ class SourceMongo {
             return { deleted: true, id: rid };
         } catch (error) {
             console.error('Error deleting review:', error);
+            throw error;
+        }
+    }
+
+    async addReco(content) {
+        try {
+            const newReco = {
+                content: content,
+                created_at: new Date()
+            };
+            const result = await this._db.collection('recommendation').insertOne(newReco);
+            return result[0];
+        } catch (error) {
+            console.error('Error adding new recommendation:', error);
+            throw error;
+        }
+    }
+
+    async deleteReco(rid) {
+        try {
+            const result = await this._db.collection('recommendation').deleteOne(
+                { _id: new ObjectId(rid) }
+            );
+
+            if (result.deletedCount === 0) {
+                throw new Error('No recommendation found with the given ID');
+            }
+
+            return { deleted: true, id: rid };
+        } catch (error) {
+            console.error('Error deleting recommendation:', error);
             throw error;
         }
     }

@@ -77,7 +77,6 @@ app.post(`${config.apiUrl}/movies/:_id/reviews`, async (req, res) => {
         const reviewData = req.body.review;
         const userId = req.body.uid;
         const userName = req.body.name;
-        console.log("111", movieId, userId, reviewData)
 
         const newReview = await db.addReview(movieId, userId, userName, reviewData);
 
@@ -90,7 +89,6 @@ app.get(`${config.apiUrl}/movies/:_id/reviews`, async (req, res) => {
     try {
         const movieId = req.params._id;
         const reviews = await db.getReview(movieId);
-        console.log(reviews);
 
         // if (reviews.length === 0) {
         //     return res.status(404).json({ message: "No reviews found for this movie." });
@@ -191,7 +189,6 @@ app.post(`${config.apiUrl}/recommend/:uid`, async (req, res) => {
 
 // admin movie/user management
 app.post(`${config.apiUrl}/users`, async (req, res) => {
-    console.log(req.body);
     try{
         const user = await db.updateUser(req.body);
         if (user) {
@@ -211,6 +208,16 @@ app.delete(`${config.apiUrl}/api/movies/:tmid`, async (req,res) => {
     } else {
         res.sendStatus(404);
     }
+})
+
+app.post(`${config.apiUrl}/recommendations`, async (req, res) => {
+    const r = await db.addReco(req.body);
+    res.status(200).send(r);
+})
+
+app.delete(`${config.apiUrl}/recommendations/:rid`, async (req, res) => {
+    const r = await db.deleteReco(req.params.rid);
+    res.status(200).send(r);
 })
 
 app.listen(PORT);
